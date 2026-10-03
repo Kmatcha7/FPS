@@ -43,6 +43,13 @@ public class EnemyDetection : MonoBehaviour
         Vector3 targetPosition = Player.position + Vector3.up;
         Vector3 direction = targetPosition - eyePoint.position;
 
+        float angle = Vector3.Angle(transform.forward, direction);
+
+        if (angle > enemyData.fieldOfView / 2f)
+        {
+            return false;
+        }
+
         if (Physics.Raycast(
             eyePoint.position,
             direction.normalized,

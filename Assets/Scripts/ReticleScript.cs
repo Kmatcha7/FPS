@@ -3,6 +3,7 @@ using UnityEngine;
 public class ReticleScript : MonoBehaviour
 {
     public GunScript gun;
+
     public RectTransform top;
     public RectTransform bottom;
     public RectTransform left;
@@ -14,11 +15,34 @@ public class ReticleScript : MonoBehaviour
 
     void Update()
     {
-        float distance = baseDistance + gun.CalculateSpread() * spreadMultiplier;
+        if (gun == null)
+        {
+            return;
+        }
 
-        top.anchoredPosition = Vector2.Lerp(top.anchoredPosition, new Vector2(0, distance), Time.deltaTime * moveSpeed);
-        bottom.anchoredPosition = Vector2.Lerp(bottom.anchoredPosition, new Vector2(0, -distance), Time.deltaTime * moveSpeed);
-        left.anchoredPosition = Vector2.Lerp(left.anchoredPosition, new Vector2(-distance, 0), Time.deltaTime * moveSpeed);
-        right.anchoredPosition = Vector2.Lerp(right.anchoredPosition, new Vector2(distance, 0), Time.deltaTime * moveSpeed);
+        // 銃の現在の拡散値からレティクルの広がりを計算
+        float spread = gun.CalculateSpread();
+        float targetDistance = baseDistance + spread * spreadMultiplier;
+
+        // レティクルを滑らかに移動
+        MoveReticle(top, new Vector2(0f, targetDistance));
+        MoveReticle(bottom, new Vector2(0f, -targetDistance));
+        MoveReticle(left, new Vector2(-targetDistance, 0f));
+        MoveReticle(right, new Vector2(targetDistance, 0f));
+    }
+
+    // 指定した位置へ滑らかに移動
+    void MoveReticle(RectTransform part, Vector2 targetPosition)
+    {
+        if (part == null)
+        {
+            return;
+        }
+
+        part.anchoredPosition = Vector2.Lerp(
+            part.anchoredPosition,
+            targetPosition,
+            moveSpeed * Time.deltaTime
+        );
     }
 }
